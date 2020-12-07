@@ -1,0 +1,77 @@
+site_name: MkModel
+
+theme:
+  # Don't include MkDocs' JavaScript
+  include_search_page: false
+  search_index_only: true
+
+  name: null
+  custom_dir: material
+  palette:
+    scheme: mkmodel
+  font: false
+  language: en
+  features:
+    # - navigation.instant
+    - navigation.tabs
+    - tabs.changeicon
+    - toc.autohide
+    - colors
+  icons:
+    home: custom/model3
+    general: custom/model1
+    test_tab: custom/model2
+  colors:
+    default: /#20d1b4
+    home: /#666666
+    _csapp: /#393333
+
+  icon:
+    logo: custom/computer1
+  favicon: assets/harddisk4.svg
+
+extra_css:
+  - css/general.css
+  - css/fonts.css
+  - css/code-admonition.css
+  - css/katex.css
+  - css/tables.css
+  - css/extra/admonitions.css
+  - css/extra/code-blocks.css
+  - css/gadgets/book.css
+  - 'https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.css'
+
+extra_javascript:
+  - 'https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.js'
+  - 'https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/contrib/auto-render.min.js'
+  - 'js/mkmain.js'
+  - 'js/katex.js'
+
+nav:
+  - home: index.md
+  - csapp👾:
+      - Preface: _csapp/index.md
+
+markdown_extensions:
+  - abbr
+  - attr_list
+  - pymdownx.snippets
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.highlight:
+      use_pygments: true
+      linenums_style: table
+  - pymdownx.inlinehilite
+  - pymdownx.tabbed
+  - footnotes
+  - def_list
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - toc:
+      permalink: 🧐
+      toc_depth: 6 # Define the range of levels to be included in the table of contents
+  - meta
+
+plugins:
+  - search
