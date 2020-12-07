@@ -36,5 +36,3 @@ git commit -m "$msg"
 echo ""
 echo ">>> git push origin source"
 git push origin source
-
-
