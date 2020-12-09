@@ -78,3 +78,4 @@ nav:
       - Basis:
         - _outline_: _csapp/1_Basis/outline.md
         - 1. information storage: _csapp/1_Basis/1.md
+        - 2. instructions: _csapp/1_Basis/2.md
