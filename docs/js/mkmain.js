@@ -8,9 +8,12 @@ import {addCyTags} from './functions/font.js'
 var topBlock = document.getElementsByTagName('article')[0];
 topBlock.className += " generalcy";
 
-
 /* render elements according to parameters in <font> elements */
-let fontBlocks = topBlock.getElementsByTagName('font');
+let htmlFontBlocks = topBlock.getElementsByTagName('font');
+let fontBlocks = []
+for (let i = 0; i < htmlFontBlocks.length; ++i)
+    fontBlocks.push(htmlFontBlocks[i])
+
 for (let i = 0; i < fontBlocks.length; ++i) {
     let className = fontBlocks[i].getAttribute('class')
     if (!className)

@@ -1,4 +1,4 @@
-site_name: MkModel
+site_name: Rubble
 
 theme:
   # Don't include MkDocs' JavaScript
@@ -47,11 +47,6 @@ extra_javascript:
   - 'js/mkmain.js'
   - 'js/katex.js'
 
-nav:
-  - home: index.md
-  - csapp👾:
-      - Preface: _csapp/index.md
-
 markdown_extensions:
   - abbr
   - attr_list
@@ -75,3 +70,11 @@ markdown_extensions:
 
 plugins:
   - search
+
+nav:
+  - home: index.md
+  - csapp👾:
+      - Preface: _csapp/index.md
+      - Basis:
+        - _outline_: _csapp/1_Basis/outline.md
+        - 1. information storage: _csapp/1_Basis/1.md

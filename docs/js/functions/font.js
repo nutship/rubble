@@ -15,12 +15,13 @@ export function addCyTags(startBlock) {
             if (!destTags[ti][i])
                 continue;
             let str = destTags[ti][i].innerHTML;
-            let pattern = new RegExp("(([a-zA-Z0-9])([a-zA-Z0-9]|\\s|\\n)*)|<[a-zA-Z0-9]\\s*[^>]*>(.|\\n)*</[a-zA-Z0-9]*>|((\\$((.|\n)+?)\\$))|(\\$\\$((.|\n)+?)\\$\\$)|<br>|<br/>|<img.*>|<link.*>","g");
+            let pattern = new RegExp("<code(\\s[^>]*)*>(.|\\n)*?</code>|<(([a-zA-Z0-9])+)(\\s[^>]*)*>(.|\\n)*</\\3>|(([a-zA-Z0-9])([a-zA-Z0-9]|\\s|\\n)*)|((\\$((.|\n)+?)\\$))|(\\$\\$((.|\n)+?)\\$\\$)|<br>|<br/>|<img.*>|<link.*>","g");
             let result;
             let nstr = str;
             let offset = 0
             let head = "<cy>", tail = "</cy>"
             while ((result = pattern.exec(str)) != null)  {
+                // console.log(result)
                 if (result[0].substring(0, 1) == '<' || result[0].substring(0, 1) == '$')
                     continue;
                 let idx = result.index, len = result[0].length;
@@ -33,3 +34,9 @@ export function addCyTags(startBlock) {
         }
     }
 }
+
+// let pattern = new RegExp("<(([a-zA-Z0-9])+)(\\s[^>]*)*>(.|\\n)*?</\\1>|((\\$((.|\n)+?)\\$))|(([a-zA-Z0-9])([a-zA-Z0-9]|\\s|\\n)*)||(\\$\\$((.|\n)+?)\\$\\$)|<br>|<br/>|<img.*>|<link.*>","g")
+// let pattern2 = /<(([a-zA-Z0-9])+)(\s[^>]*)*>(.|\n)*?<\/\1>/g
+// let txt = "<code>2</code2>32<code>4</code>"
+// let res = pattern.exec(txt)
+// console.log(res)

@@ -5,10 +5,15 @@
     --simple-table-font-size: 0.7rem;
 }
 
+.md-typeset__scrollwrap {
+    margin-top: 0.7em;
+}
+
 .md-typeset__table table:not([class]) {
     font-family: cycn-eng, cycn;
 	border-collapse: collapse; /* 是否将表格两边折叠为一条线 */
-	margin-left: 0.05rem;        
+    margin-left: 1rem;    
+    margin-top: 0rem;    
     font-size: var(--simple-table-font-size);
     /* important overrides: */ 
     box-shadow: none;

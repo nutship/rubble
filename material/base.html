@@ -31,9 +31,17 @@
     {% endblock %}
     {% block htmltitle %}
       {% if page and page.meta and page.meta.title %}
-        <title>{{ page.meta.title }} - {{ config.site_name }}</title>
+        {% if page.meta.title == '_outline_' %}
+            <title>outline - {{ config.site_name }}</title>
+        {% else %}
+            <title>{{ page.meta.title }} - {{ config.site_name }}</title>
+        {% endif %}
       {% elif page and page.title and not page.is_homepage %}
-        <title>{{ page.title | striptags }} - {{ config.site_name }}</title>
+        {% if page.title == '_outline_' %}
+            <title>outline - {{ config.site_name }}</title>
+        {% else %}
+            <title>{{ page.title | striptags }} - {{ config.site_name }}</title>
+        {% endif %}
       {% else %}
         <title>{{ config.site_name }}</title>
       {% endif %}
@@ -154,7 +162,11 @@
                   </a>
                 {% endif %}
                 {% if not "\x3ch1" in page.content %}
-                  <h1>{{ page.title | default(config.site_name, true)}}</h1>
+                  {% if page.title and page.title == '_outline_' %}
+                    <h1>outline</h1>
+                  {% else %}
+                    <h1>{{ page.title | default(config.site_name, true)}}</h1>
+                  {% endif %}
                 {% endif %}
                 {{ page.content }}
                 {% if page and page.meta %}

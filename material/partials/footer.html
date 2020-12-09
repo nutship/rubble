@@ -16,7 +16,11 @@
                 <span class="md-footer-nav__direction">
                   {{ lang.t("footer.previous") }}
                 </span>
-                {{ page.previous_page.title }}
+                {% if page.previous_page.title == "_outline_" %}
+                    outline
+                {% else %}
+                    {{ page.previous_page.title }}
+                {% endif %}
               </div>
             </div>
           </a>
@@ -28,7 +32,11 @@
                 <span class="md-footer-nav__direction">
                   {{ lang.t("footer.next") }}
                 </span>
-                {{ page.next_page.title }}
+                {% if page.next_page.title == "_outline_" %}
+                    outline
+                {% else %}
+                    {{ page.next_page.title }}
+                {% endif %}
               </div>
             </div>
             <div class="md-footer-nav__button md-icon">
