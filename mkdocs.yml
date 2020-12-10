@@ -8,7 +8,7 @@ theme:
   name: null
   custom_dir: material
   palette:
-    scheme: mkmodel
+    scheme: rubble
   font: false
   language: en
   features:
@@ -22,7 +22,7 @@ theme:
     general: custom/model1
     test_tab: custom/model2
   colors:
-    default: /#20d1b4
+    default: /#393333
     home: /#666666
     _csapp: /#393333
 

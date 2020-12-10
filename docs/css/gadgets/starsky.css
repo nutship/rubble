@@ -22,7 +22,7 @@
 	0%,100% { opacity:0; }
 	50% {opacity:.9; }
 }.landscape {
-	position:absolute;
+	position: absolute;
 	bottom:0px;
 	left:0;
 	width:100%;
