@@ -11,8 +11,10 @@ topBlock.className += " generalcy";
 /* render elements according to parameters in <font> elements */
 let htmlFontBlocks = topBlock.getElementsByTagName('font');
 let fontBlocks = []
-for (let i = 0; i < htmlFontBlocks.length; ++i)
+for (let i = 0; i < htmlFontBlocks.length; ++i) {
+    console.log(htmlFontBlocks[i].innerHTML)
     fontBlocks.push(htmlFontBlocks[i])
+}
 
 for (let i = 0; i < fontBlocks.length; ++i) {
     let className = fontBlocks[i].getAttribute('class')
