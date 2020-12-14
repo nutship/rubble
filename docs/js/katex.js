@@ -3,6 +3,7 @@ document.addEventListener("DOMContentLoaded", function() {
         delimiters: [
             {left: "$$", right: "$$", display: true},
             {left: "$", right: "$", display: false}
-        ]
+        ],
+        fleqn: true
     });
 });

@@ -1,7 +1,7 @@
 :root {
     --extra-admonition-margin-top: 1.25rem;
     --admonition-title-margin-bottom: 0.4rem;
-    --admonition-font-size: 0.739rem;
+    --admonition-font-size: 0.679rem;
     --admonition-header-font-size: 0.739rem;
     --admonition-cy-font-size: 0.67rem;
 }
@@ -64,7 +64,7 @@
             mask-image: var(--md-admonition-icon--hint);
 }
 
-.md-typeset .hint ul, .md-typeset .hint p {
+.md-typeset .hint ul, .md-typeset .hint p, .md-typeset .hint {
     font-size: var(--admonition-font-size);
     letter-spacing: normal;
 }
@@ -126,7 +126,7 @@
             mask-image: var(--md-admonition-icon--caution);
 }
 
-.md-typeset .caution ul, .md-typeset .caution p {
+.md-typeset .caution ul, .md-typeset .caution p, .md-typeset .caution {
     font-size: var(--admonition-font-size);
     letter-spacing: normal;
 }

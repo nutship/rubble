@@ -1,5 +1,5 @@
 import {addpTagInBlockTexts} from './utils/addtags.js'
-import {renderImagleBlocks, renderFloatCodeBlocks, renderTables, removeInvalidFontBlock} from './utils/renders.js'
+import {renderImagleBlocks, renderFloatCodeBlocks, renderTables, renderLists} from './utils/renders.js'
 import {addCodeBlocksCSS} from './functions/add_code_css.js'
 import {addCyTags} from './functions/font.js'
 
@@ -12,7 +12,6 @@ topBlock.className += " generalcy";
 let htmlFontBlocks = topBlock.getElementsByTagName('font');
 let fontBlocks = []
 for (let i = 0; i < htmlFontBlocks.length; ++i) {
-    console.log(htmlFontBlocks[i].innerHTML)
     fontBlocks.push(htmlFontBlocks[i])
 }
 
@@ -31,6 +30,9 @@ for (let i = 0; i < fontBlocks.length; ++i) {
     }
     else if (funcType == 't') {
         renderTables(fontBlocks[i], funcParams);
+    }
+    else if (funcType == 'u') {
+        renderLists(fontBlocks[i], funcParams);
     }
 }
 

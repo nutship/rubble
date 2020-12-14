@@ -85,7 +85,7 @@ div.md-container nav.md-tabs {
 :root {
     --generalcy-font-size: 0.73rem;
     --generalcy-letter-spacing: 0.022rem;
-    --generalcy-cy-font-size: 0.677rem;
+    --generalcy-cy-font-size: 0.679rem;
 }
 
 .generalcy {
@@ -151,7 +151,8 @@ div.md-sidebar.md-sidebar--secondary ul.md-nav__list {
     font-size: var(--generalcy-cy-font-size);
     /* word-wrap: break-word;
     overflow: hidden; */
-    word-break: break-all;
+    word-spacing: 0.10rem;
+    
 }
 
 /* font size of mathematical English words */

@@ -206,3 +206,32 @@ export function removeInvalidFontBlock() {
     let body = document.getElementsByTagName('body')[0];
     body.innerHTML = body.innerHTML.replace(/<p><font.*><\/font><\/p>/g, "");
 }
+
+export function renderLists(fontBlock, funcParams) {
+    let uls = fontBlock.getElementsByTagName('ul');
+    if (!uls || uls.length == 0) {
+        return;
+    }
+    let ul = uls[0];
+    let mLeftU1 = '0.6rem', mLeftU2 = '1.2rem', mLeftRelDist = 12;
+
+    for (let i = 1; i < funcParams.length; ++i) {
+        let keyName = funcParams[i].split(KEY_SPLITER)[0];
+        var nidx = keyName.length + 1;
+        if (keyName == 'u1') {
+            let nums = funcParams[i].substring(nidx).split(PARAM_SPLITER);
+            mLeftU1 = nums[0];
+            mLeftU2 = px2rem(String(Number(nums[0]) + mLeftRelDist));
+            mLeftU1 = px2rem(nums[0]);
+        } 
+        else if (keyName == 'u2') {
+            let nums = funcParams[i].substring(nidx).split(PARAM_SPLITER);
+            mLeftU2 = px2rem(nums[0]);
+        }
+    }
+
+    ul.style.setProperty('--ul1-margin-left', mLeftU1);
+    ul.style.setProperty('--ul2-margin-left', mLeftU2);
+    replaceElementByNewTag(fontBlock, 'div')
+
+}
