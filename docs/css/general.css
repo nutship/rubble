@@ -178,3 +178,12 @@ div.md-sidebar.md-sidebar--secondary ul.md-nav__list {
     margin-top: 0.7em;
     margin-bottom: 0.7em;
 }
+
+.md-typeset .highlighttable div.highlight pre {
+    margin-top: 0em;
+    margin-bottom: 0em;
+}
+
+.md-typeset .highlighttable div.linenodiv pre {
+    margin-top: 0em;
+}

@@ -83,3 +83,4 @@ nav:
         - 4. struct: _csapp/1_Basis/4.md
       - Labs:
         - datalab: _csapp/_Labs/datalab.md
+        - bomblab: _csapp/_Labs/bomblab.md
