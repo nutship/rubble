@@ -1,8 +1,40 @@
 ### 准备
 
--   `%rdi, %rsi, %rdx, %rcx, %r8, %r9`
+主要用到的一些知识:
 
-### Phases
+-   传参: `%rdi, %rsi, %rdx, %rcx, %r8, %r9`
+-   跳转指令
+    -   有符号: `jg (>), jge (>=), jl (<), jle (<=)` （greater, less)
+    -   无符号: `ja (>), jae (>=), jb (<), jbe (<=)` (above, below)
+-   `objdump -d`
+
+基本 `gdb` 指令:
+
+<font class="t_b%0_h%0&0">
+
+| command              | effect               | command    | effect                       |
+| :------------------- | :------------------- | :--------- | :--------------------------- |
+| `run [args]`         | 运行                 | `stepi`    | 执行 1 条指令                |
+| `quit`               | 退出 gdb             | `stepi 4`  | 执行 4 条指令                |
+| `break <func_name>`  | 在函数入口处设置断点 | `nexti`    | 类似 `stepi`，但以函数为单位 |
+| `break* <addr>`      | 根据地址设断点       | `continue` | 继续到下一个断点             |
+| `info b`             | 查看所有断点         | `finish`   | 运行到当前函数返回           |
+| `delete [break_num]` | 删除断点             | `info r`   | 查看寄存器状态               |
+| `info frame`         | 查看栈帧信息         | `delete`   | 删除所有断点                 |
+
+<font class="t_a%30&20_b%20_h%0&0_c%matable">
+
+检查数据:
+
+-   `x/[n|format|unitsize] <addr>`
+    -   `n`: &ensp; 正整数，表示显示几个 unit
+    -   `format`: &ensp; 显示格式，如 x(hex), t(binary), d(decimal), u(unsigned dec), o(octal), c(char), f(float), s(string)
+    -   `unitsize`: &ensp; bhwg (1-8 字节)
+-   `print [format] <addr|register>`
+    -   `print /x %rax`
+    -   `print *(long *) 0xfffffff`: &ensp; 输出位于 `0xffffffff` 的长整数
+
+### Start
 
 每个 phase 的格式如下:
 
@@ -91,7 +123,7 @@ phase_defused();
         401337:	c3                   	retq
     ```
 
-由汇编源码可知:
+由源码:
 
 -   `phase_1`: 比较字符串 `input` 和 `*0x402400`，若 `strings_not_equal` 返回 0，则成功退出
 -   `strings_not_equal`: 首先比较两个字符串的长度，然后判断字符串是否为空，最后进入循环，逐个字符比较
@@ -354,7 +386,7 @@ int func4(x, y, z) {
 }
 ```
 
-可见，这是一个二分查找，且要使返回值为 0，一次向右的递归也不能有，不向右的 `arg1` (7,3,1,0) 都 work.
+可见，这是一个二分查找，且要使返回值为 0，一次向右的递归也不能有，`arg1=7/3/1/0` 均可
 
 #### phase5
 
@@ -530,89 +562,300 @@ M[%rsp + 22] = 0x0;
         401203:	c3                   	retq
     ```
 
-```C
+??? adcodes "translated pseudocode"
 
-// 0x401100-0x401151
-%r13 = %rsp;
-read_six_numbers(%rsp);
-%r14 = %rsp;
-%r12d = 0x0;
-while (true) {
-    %rbp = %r13;
-    %eax = M[%r13];
-    %eax = %eax - 1;
-    if (%eax > 5)
-        explode_bomb();
-    %r12d = %r12d + 1;
-    if (%r12d == 6)
-        break;
-    %ebx = %r12d;
-    // here: M[%rbp]=M[%rsp+i], %rax=M[%rsp+j], j ranges in [i+1, 5]
-    while (%ebx <= 5) {
-        %rax = %ebx; // signed extend: 4bytes to 8bytes
-        %eax = M[%rsp + %rax*4];
-        if (M[%rbp] == %rax)
+    ```C
+    /* Part1: 0x401100-0x401151 */
+    %r13 = %rsp;
+    read_six_numbers(%rsp);
+    %r14 = %rsp;
+    %r12d = 0x0;
+    while (true) {
+        %rbp = %r13;
+        %eax = M[%r13];
+        %eax = %eax - 1;
+        if (%eax > 5)
             explode_bomb();
-        %ebx = %ebx + 1;
+        %r12d = %r12d + 1;
+        if (%r12d == 6)
+            break;
+        %ebx = %r12d;
+        // here: M[%rbp]=M[%rsp+i], %rax=M[%rsp+j], j ranges in [i+1, 5]
+        while (%ebx <= 5) {
+            %rax = %ebx; // signed extend: 4bytes to 8bytes
+            %eax = M[%rsp + %rax*4];
+            if (M[%rbp] == %rax)
+                explode_bomb();
+            %ebx = %ebx + 1;
+        }
+        %r13 = %r13 + 4;
     }
-    %r13 = %r13 + 4;
-}
 
-// 0x401153 - 0x401174
-%rsi = %rsp + 24;
-%rax = %r14; // %r14=%rsp
-%ecx = 7;
-while (%rax != %rsi) {
-    %edx = %ecx;
-    %edx = %edx - M[%rax];
-    M[%rax] = %edx;
-    %rax = %rax + 4;
-}
-%rdx = M[%rdx + 8];
+    /* Part2: 0x401153-0x401174 */
+    %rsi = %rsp + 24;
+    %rax = %r14; // %r14=%rsp
+    %ecx = 7;
+    while (%rax != %rsi) {
+        %edx = %ecx;
+        %edx = %edx - M[%rax];
+        M[%rax] = %edx;
+        %rax = %rax + 4;
+    }
+    %esi = 0;
 
-// 0x401176 - 0x4011a9
-// in: 0x401197, out: 0x401195
-while (%rsi != 24) {
-    %ecx = M[%rsp + %rsi];
-    if (%ecx <= 1) {
-        %edx = 0x6032d0;
-    } else {
-        %eax = 1;
-        %edx = 0x6032d0;
-        while (%eax != %ecx) {
-            %rdx = M[%rdx + 8];
-            %eax = %eax + 1;
+    /* Part3: 0x401176-0x4011a9 */
+    // in: 0x401197, out: 0x401195
+    while (%rsi != 24) {
+        %ecx = M[%rsp + %rsi];
+        if (%ecx <= 1) {
+            %edx = 0x6032d0;
+        } else {
+            %eax = 1;
+            %edx = 0x6032d0;
+            while (%eax != %ecx) {
+                %rdx = M[%rdx + 8];
+                %eax = %eax + 1;
+            }
         }
         M[%rsp + 2*%rsi + 32] = %rdx;
         %rsi = %rsi + 4;
     }
-}
 
-// 0x4011ab - 0x4011ba
-%rbx = M[%rsp + 32];
-%rax = %rsp + 40;
-%rsi = %rsp + 80;
-%rcx = %rbx;
+    /* Part4: 0x4011ab-0x4011ba, 0x4011bd-0x4011d0 */
+    /*  M[M[%rsp + 32 + 8*i] + 8] = M[%rsp + 40 + 8*i] */
+    %rbx = M[%rsp + 32];
+    %rax = %rsp + 40;
+    %rsi = %rsp + 80;
+    %rcx = %rbx;
+    while (true) {
+        %rdx = M[%rax];
+        M[%rcx + 8] = %rdx;
+        %rax = %rax + 8;
+        if (%rax == %rsi)
+            break;
+        %rcx = %rdx;
+    }
 
-// 0x4011bd - 0x4011d0
-while (true) {
-    %rdx = M[%rax];
-    M[%rcx + 8] = %rdx;
-    %rax = %rax + 8;
-    if (%rax == %rsi)
-        break;
-    %rcx = %rdx;
-}
+    /* Part5: 0x4011d2-0x4011f7 */
+    /*  M[M[%rsp + 32]] < M[M[M[%rsp + 32] + 8]] */
+    M[%rdx + 8] = 0x0;
+    %ebp = 5;
+    while (%ebp != 1) {
+        %rax = M[%rbx + 8];
+        %eax = M[%rax];
+        if (M[%rbx] < %eax)
+            explode_bomb();
+        %rbx = M[%rbx + 8];
+        %ebp = %ebp - 1;
+    }
+    ```
 
-// 0x4011d2 - 0x4011f7
-M[%rdx + 8] = 0x0;
-%ebp = 5;
-while (%ebp != 1) {
-    %rax = M[%rbx + 8];
-    %eax = M[%rax];
-    if (M[%rbx] < %eax)
-        explode_bomb();
-    %rbx = M[%rbx + 8];
-    %ebp = %ebp - 1;
+<!-- prettier-ignore-start -->
+??? hint "CFG of Part4"
+    <img src="../img/part4cfg.png">
+<!-- prettier-ignore-end -->
+
+把源码分为五个部分:
+
+-   Part1: &ensp; 读入 6 个整数到 `M[%rsp]~M[%rsp+32]` (记为 `int arr1[6]`)，要求这 6 个数在 `[1, 6]` 之间且两两不相等
+-   Part2: &ensp; 分别用 7 减去这 6 个数，并存回原位
+-   Part3: &ensp; 根据这 6 个数的值，将链表 `0x6032d0` 每个结点的地址存储于 `M[%rsp+32]~M[%rsp+80]` (记为 `int *arr2[6]`，且 `arr2[i] = LinkedList[arr1[i]]`)
+-   Part4: &ensp; 根据 `arr2` 存储的结点顺序，对原链表进行重排
+-   Part5: &ensp; 检查原链表，要求 `LinkedList[i].value < LinkedList[i + 1].value`，即从大到小排序
+
+查看链表的内容:
+
+```C
+(gdb) x/24xw 0x6032d0
+0x6032d0 <node1>:       0x0000014c      0x00000001      0x006032e0      0x00000000
+0x6032e0 <node2>:       0x000000a8      0x00000002      0x006032f0      0x00000000
+0x6032f0 <node3>:       0x0000039c      0x00000003      0x00603300      0x00000000
+0x603300 <node4>:       0x000002b3      0x00000004      0x00603310      0x00000000
+0x603310 <node5>:       0x000001dd      0x00000005      0x00603320      0x00000000
+0x603320 <node6>:       0x000001bb      0x00000006      0x00000000      0x00000000
+```
+
+6 个整数为 332 168 924 691 477 473，对其进行排序、逆向到最开始的输入为 4 3 2 1 6 5。
+
+#### secret phase
+
+??? adcodes "phase_defused"
+
+    ```objdump
+    00000000004015c4 <phase_defused>:
+        4015c4:	48 83 ec 78          	sub    $0x78,%rsp
+        4015c8:	64 48 8b 04 25 28 00 	mov    %fs:0x28,%rax
+        4015cf:	00 00
+        4015d1:	48 89 44 24 68       	mov    %rax,0x68(%rsp)
+        4015d6:	31 c0                	xor    %eax,%eax
+        4015d8:	83 3d 81 21 20 00 06 	cmpl   $0x6,0x202181(%rip)        # 603760 <num_input_strings>
+        4015df:	75 5e                	jne    40163f <phase_defused+0x7b>
+        4015e1:	4c 8d 44 24 10       	lea    0x10(%rsp),%r8
+        4015e6:	48 8d 4c 24 0c       	lea    0xc(%rsp),%rcx
+        4015eb:	48 8d 54 24 08       	lea    0x8(%rsp),%rdx
+        4015f0:	be 19 26 40 00       	mov    $0x402619,%esi
+        4015f5:	bf 70 38 60 00       	mov    $0x603870,%edi
+        4015fa:	e8 f1 f5 ff ff       	callq  400bf0 <__isoc99_sscanf@plt>
+        4015ff:	83 f8 03             	cmp    $0x3,%eax
+        401602:	75 31                	jne    401635 <phase_defused+0x71>
+        401604:	be 22 26 40 00       	mov    $0x402622,%esi
+        401609:	48 8d 7c 24 10       	lea    0x10(%rsp),%rdi
+        40160e:	e8 25 fd ff ff       	callq  401338 <strings_not_equal>
+        401613:	85 c0                	test   %eax,%eax
+        401615:	75 1e                	jne    401635 <phase_defused+0x71>
+        401617:	bf f8 24 40 00       	mov    $0x4024f8,%edi
+        40161c:	e8 ef f4 ff ff       	callq  400b10 <puts@plt>
+        401621:	bf 20 25 40 00       	mov    $0x402520,%edi
+        401626:	e8 e5 f4 ff ff       	callq  400b10 <puts@plt>
+        40162b:	b8 00 00 00 00       	mov    $0x0,%eax
+        401630:	e8 0d fc ff ff       	callq  401242 <secret_phase>
+        401635:	bf 58 25 40 00       	mov    $0x402558,%edi
+        40163a:	e8 d1 f4 ff ff       	callq  400b10 <puts@plt>
+        40163f:	48 8b 44 24 68       	mov    0x68(%rsp),%rax
+        401644:	64 48 33 04 25 28 00 	xor    %fs:0x28,%rax
+        40164b:	00 00
+        40164d:	74 05                	je     401654 <phase_defused+0x90>
+        40164f:	e8 dc f4 ff ff       	callq  400b30 <__stack_chk_fail@plt>
+        401654:	48 83 c4 78          	add    $0x78,%rsp
+        401658:	c3                   	retq
+    ```
+
+仔细观察 `phase_defused` 还调用了 `secret_phase`，其中几条关键指令:
+
+-   `cmpl $0x6,0x202181(%rip)`: 存储 `bomb` 已经读入的字符串数，只有等于 6 才会继续向下走
+-   `sscanf`:
+    -   `mov $0x402619,%esi`: &ensp; `"%d %d %s"`
+    -   `mov $0x603870,%edi`: &ensp; 存储 phase3 输入的字符串
+-   `mov $0x402622,%esi`: `DrEvil`
+
+只需在 phase3 的字符串后输入 `DrEvil` 即可进入 secret phase.
+
+=== "secret_phase"
+
+    ```objdump
+    0000000000401242 <secret_phase>:
+        401242:	53                   	push   %rbx
+        401243:	e8 56 02 00 00       	callq  40149e <read_line>
+        401248:	ba 0a 00 00 00       	mov    $0xa,%edx
+        40124d:	be 00 00 00 00       	mov    $0x0,%esi
+        401252:	48 89 c7             	mov    %rax,%rdi
+        401255:	e8 76 f9 ff ff       	callq  400bd0 <strtol@plt>
+        40125a:	48 89 c3             	mov    %rax,%rbx
+        40125d:	8d 40 ff             	lea    -0x1(%rax),%eax
+        401260:	3d e8 03 00 00       	cmp    $0x3e8,%eax
+        401265:	76 05                	jbe    40126c <secret_phase+0x2a>
+        401267:	e8 ce 01 00 00       	callq  40143a <explode_bomb>
+        40126c:	89 de                	mov    %ebx,%esi
+        40126e:	bf f0 30 60 00       	mov    $0x6030f0,%edi
+        401273:	e8 8c ff ff ff       	callq  401204 <fun7>
+        401278:	83 f8 02             	cmp    $0x2,%eax
+        40127b:	74 05                	je     401282 <secret_phase+0x40>
+        40127d:	e8 b8 01 00 00       	callq  40143a <explode_bomb>
+        401282:	bf 38 24 40 00       	mov    $0x402438,%edi
+        401287:	e8 84 f8 ff ff       	callq  400b10 <puts@plt>
+        40128c:	e8 33 03 00 00       	callq  4015c4 <phase_defused>
+        401291:	5b                   	pop    %rbx
+        401292:	c3                   	retq
+    ```
+
+=== "&emsp;fun7&emsp;"
+
+    ```objdump
+    0000000000401204 <fun7>:
+        401204:	48 83 ec 08          	sub    $0x8,%rsp
+        401208:	48 85 ff             	test   %rdi,%rdi
+        40120b:	74 2b                	je     401238 <fun7+0x34>
+        40120d:	8b 17                	mov    (%rdi),%edx
+        40120f:	39 f2                	cmp    %esi,%edx
+        401211:	7e 0d                	jle    401220 <fun7+0x1c>
+        401213:	48 8b 7f 08          	mov    0x8(%rdi),%rdi
+        401217:	e8 e8 ff ff ff       	callq  401204 <fun7>
+        40121c:	01 c0                	add    %eax,%eax
+        40121e:	eb 1d                	jmp    40123d <fun7+0x39>
+        401220:	b8 00 00 00 00       	mov    $0x0,%eax
+        401225:	39 f2                	cmp    %esi,%edx
+        401227:	74 14                	je     40123d <fun7+0x39>
+        401229:	48 8b 7f 10          	mov    0x10(%rdi),%rdi
+        40122d:	e8 d2 ff ff ff       	callq  401204 <fun7>
+        401232:	8d 44 00 01          	lea    0x1(%rax,%rax,1),%eax
+        401236:	eb 05                	jmp    40123d <fun7+0x39>
+        401238:	b8 ff ff ff ff       	mov    $0xffffffff,%eax
+        40123d:	48 83 c4 08          	add    $0x8,%rsp
+        401241:	c3                   	retq
+    ```
+
+`secret_phase` 的行为:
+
+-   将读入的字符串通过 `strtol` 转换为整数 `%edi`，且 `%edi` 必须 `<= 1001`
+-   然后调用 `fun7(0x6030f0, %edi)`，返回值必须等于 2
+
+`fun7` 可大致翻译如下:
+
+```C
+fun7(%rdi, %rsi) {
+    if (%rdi == 0)
+        return 0xffffffff; // find empty node, return -1
+    %edx = M[%rdi];
+    if (%edx <= %esi) {
+        %eax = 0x0;
+        if (%edx == %esi)
+            return %eax;
+        %rdi = M[%rdi + 16];
+        %eax = fun7(%rdi, %rsi); // right
+        %eax = %rax + %rax + 1;
+    } else {
+        %rdi = M[%rdi + 8];
+        %eax = fun7(%rdi, %rsi); // left
+        %eax = %eax + %eax;
+    }
+    return %rax;
 }
 ```
+
+??? adcodes "gdb: view 0x6030f0"
+
+    ```C
+    (gdb) x/60xg 0x6030f0
+    0x6030f0 <n1>:  0x0000000000000024      0x0000000000603110
+    0x603100 <n1+16>:       0x0000000000603130      0x0000000000000000
+    0x603110 <n21>: 0x0000000000000008      0x0000000000603190
+    0x603120 <n21+16>:      0x0000000000603150      0x0000000000000000
+    0x603130 <n22>: 0x0000000000000032      0x0000000000603170
+    0x603140 <n22+16>:      0x00000000006031b0      0x0000000000000000
+    0x603150 <n32>: 0x0000000000000016      0x0000000000603270
+    0x603160 <n32+16>:      0x0000000000603230      0x0000000000000000
+    0x603170 <n33>: 0x000000000000002d      0x00000000006031d0
+    0x603180 <n33+16>:      0x0000000000603290      0x0000000000000000
+    0x603190 <n31>: 0x0000000000000006      0x00000000006031f0
+    0x6031a0 <n31+16>:      0x0000000000603250      0x0000000000000000
+    0x6031b0 <n34>: 0x000000000000006b      0x0000000000603210
+    0x6031c0 <n34+16>:      0x00000000006032b0      0x0000000000000000
+    0x6031d0 <n45>: 0x0000000000000028      0x0000000000000000
+    0x6031e0 <n45+16>:      0x0000000000000000      0x0000000000000000
+    0x6031f0 <n41>: 0x0000000000000001      0x0000000000000000
+    0x603200 <n41+16>:      0x0000000000000000      0x0000000000000000
+    0x603210 <n47>: 0x0000000000000063      0x0000000000000000
+    0x603220 <n47+16>:      0x0000000000000000      0x0000000000000000
+    0x603230 <n44>: 0x0000000000000023      0x0000000000000000
+    0x603240 <n44+16>:      0x0000000000000000      0x0000000000000000
+    0x603250 <n42>: 0x0000000000000007      0x0000000000000000
+    0x603260 <n42+16>:      0x0000000000000000      0x0000000000000000
+    0x603270 <n43>: 0x0000000000000014      0x0000000000000000
+    0x603280 <n43+16>:      0x0000000000000000      0x0000000000000000
+    0x603290 <n46>: 0x000000000000002f      0x0000000000000000
+    0x6032a0 <n46+16>:      0x0000000000000000      0x0000000000000000
+    0x6032b0 <n48>: 0x00000000000003e9      0x0000000000000000
+    0x6032c0 <n48+16>:      0x0000000000000000      0x0000000000000000
+    ```
+
+```
+                  24
+                /     \
+              8         32
+            /  \      /    \
+           6   16    2d     6b
+         / \   / \   / \   /  \
+        1  7  14 23 28 2f 63  3e9
+```
+
+由此可知 `fun7` 是 BST 的查找，要使返回值为 2，目标结点可以是 `0x16` 或 `0x14`。
