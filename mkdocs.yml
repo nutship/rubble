@@ -84,3 +84,4 @@ nav:
       - Labs:
         - datalab: _csapp/_Labs/datalab.md
         - bomblab: _csapp/_Labs/bomblab.md
+        - attacklab: _csapp/_Labs/attacklab.md
