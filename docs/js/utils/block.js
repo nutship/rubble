@@ -49,3 +49,13 @@ export function appendEndDiv(element) {
 export function px2rem(px) {
     return String(Number(px) * 0.05) + 'rem';
 }
+
+export function init2DimArray(rowM, colN, val) {
+    let arr = new Array();
+    for (let i = 0; i < rowM; ++i)
+        arr[i] = new Array();
+    for (let i = 0; i < rowM; ++i)
+        for (let j = 0; j < colN; ++j) 
+            arr[i][j] = val;
+    return arr;
+}

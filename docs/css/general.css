@@ -189,3 +189,7 @@ div.md-sidebar.md-sidebar--secondary ul.md-nav__list {
 .md-typeset .highlighttable div.linenodiv pre {
     margin-top: 0em;
 }
+
+.md-typeset table code {
+    word-break: normal;
+}

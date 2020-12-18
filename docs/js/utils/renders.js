@@ -1,4 +1,4 @@
-import {insertChildByNewTag, insertParentByNewTag, replaceElementByNewTag, appendEndDiv, px2rem} from './block.js'
+import {insertChildByNewTag, insertParentByNewTag, replaceElementByNewTag, appendEndDiv, px2rem, init2DimArray} from './block.js'
 
 
 let KEY_SPLITER = "%";
@@ -155,6 +155,47 @@ export function renderTables(fontBlock, funcParams) {
         return;
     }
 
+    // rowspan or colspan
+    for (let i = 0; i < tables.length; ++i) {
+        let table = tables[i];
+        let tbodyRows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+        let m = tbodyRows.length;
+        let n = tbodyRows[0].getElementsByTagName('td').length;
+        let rmTds = init2DimArray(m, n, 0);
+        for (let j = 0; j < tbodyRows.length; ++j) {
+            let tds = tbodyRows[j].getElementsByTagName('td');
+            for (let k = 0; k < tds.length; ++k) {
+                let td = tds[k];
+                let rspan = td.getElementsByTagName('rspan')[0];
+                if (rspan) {
+                    let height = Number(rspan.innerText);
+                    for (let kk = 0; kk < height - 1; ++kk) {
+                        rmTds[j + kk + 1][k] = 1;
+                    }
+                    td.rowSpan = rspan.innerHTML;
+                    td.removeChild(rspan);
+                }
+                
+                let cspan = td.getElementsByTagName('cspan')[0];
+                if (cspan) {
+                    let width = Number(cspan.innerText);
+                    for (let kk = 0; kk < width - 1; ++kk)
+                        rmTds[j][k + kk + 1] = 1;
+                    td.colSpan = cspan.innerText;
+                    td.removeChild(cspan);
+                }
+            }
+        }
+
+        for (let j = tbodyRows.length - 1; j >= 0; --j) {
+            let tds = tbodyRows[j].getElementsByTagName('td');
+            for (let k = tds.length - 1; k >= 0; --k) { 
+                if (rmTds[j][k] == 1)
+                    tds[k].parentNode.removeChild(tds[k]);
+            }
+        }
+    }
+
     let marginLeft = '0', marginRight = '0', marginTop = '0', marginBottom = '0';
     let tdPadding = false, tdPaddingTop = '5', tdPaddingBottom = '5';
     let tableClassName = '';
@@ -214,7 +255,9 @@ export function renderLists(fontBlock, funcParams) {
     }
     let ul = uls[0];
     let mLeftU1 = '0.6rem', mLeftU2 = '1.2rem', mLeftRelDist = 12;
-
+    let mLeftU1Mode = '0.6rem', mLeftU2Mode = '1.2rem', mLeftRelDistMode = 12;
+    let setVal = false, setMode = false;
+    let set1 = false, set2 = false;
     for (let i = 1; i < funcParams.length; ++i) {
         let keyName = funcParams[i].split(KEY_SPLITER)[0];
         var nidx = keyName.length + 1;
@@ -223,15 +266,37 @@ export function renderLists(fontBlock, funcParams) {
             mLeftU1 = nums[0];
             mLeftU2 = px2rem(String(Number(nums[0]) + mLeftRelDist));
             mLeftU1 = px2rem(nums[0]);
+            setVal = true;
+            set1 = true;
         } 
         else if (keyName == 'u2') {
             let nums = funcParams[i].substring(nidx).split(PARAM_SPLITER);
             mLeftU2 = px2rem(nums[0]);
+            setVal = true;
+            set2 = true;
+        }
+        else if (keyName == 'n') {
+            let ul2 = ul.getElementsByTagName('ul');
+            for (let j = 0; j < ul2.length; ++j)
+                ul2[j].style.listStyleType = 'none';
+            setMode = true;
+            mLeftU1Mode = '1.25rem';
+            mLeftU2Mode = '1.0rem';
+        }
+        else if (keyName == '1') {
+            setMode = true;
         }
     }
+    if (set2 && !set1) {
+        mLeftU1 = mLeftU1Mode;
+    }
+    if (setVal) {
+        ul.style.setProperty('--ul1-margin-left', mLeftU1);
+        ul.style.setProperty('--ul2-margin-left', mLeftU2);
+    } else if (setMode) {
+        ul.style.setProperty('--ul1-margin-left', mLeftU1Mode);
+        ul.style.setProperty('--ul2-margin-left', mLeftU2Mode);
+    }
 
-    ul.style.setProperty('--ul1-margin-left', mLeftU1);
-    ul.style.setProperty('--ul2-margin-left', mLeftU2);
     replaceElementByNewTag(fontBlock, 'div')
-
 }

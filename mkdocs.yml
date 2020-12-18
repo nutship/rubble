@@ -81,6 +81,8 @@ nav:
         - 2. instructions: _csapp/1_Basis/2.md
         - 3. procedures: _csapp/1_Basis/3.md
         - 4. struct: _csapp/1_Basis/4.md
+      - Link:
+        - 1. ?: _csapp/_Link/1.md
       - Labs:
         - datalab: _csapp/_Labs/datalab.md
         - bomblab: _csapp/_Labs/bomblab.md
