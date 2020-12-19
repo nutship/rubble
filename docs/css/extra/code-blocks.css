@@ -9,6 +9,18 @@
 }
 
 /********* highlight *********/
+
+/* set overflow */
+/* .wcode div.highlight {
+    overflow: auto;
+    width: 22em;
+} */
+
+/* .wcode > div > div.highlighttable {
+    overflow: auto;
+    width: 22em;
+} */
+
 .wcode div .highlight pre code {
     font-family: var(--wcode-font-family);
     background-color: var(--wcode-background-color);
