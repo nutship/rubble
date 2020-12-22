@@ -14,7 +14,7 @@ theme:
   features:
     # - navigation.instant
     - navigation.tabs
-    - tabs.changeicon
+    # - tabs.changeicon
     - toc.autohide
     - colors
   icons:
