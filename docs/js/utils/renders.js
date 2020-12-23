@@ -286,6 +286,12 @@ export function renderLists(fontBlock, funcParams) {
         else if (keyName == '1') {
             setMode = true;
         }
+        else if (keyName == 'nn') {
+            setMode = true;
+            ul.style.listStyleType = 'none';
+            mLeftU1Mode = '0.2rem';
+            mLeftU2Mode = '0.5rem';
+        }
     }
     if (set2 && !set1) {
         mLeftU1 = mLeftU1Mode;
