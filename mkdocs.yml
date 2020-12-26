@@ -85,6 +85,8 @@ nav:
         - 1. object file: _csapp/_Link/1.md
         - 2. static linking: _csapp/_Link/2.md
         - 3. dynamic linking: _csapp/_Link/3.md
+      - ECF:
+        - 1. process: _csapp/_ECF/1.md
       - Labs:
         - datalab: _csapp/_Labs/datalab.md
         - bomblab: _csapp/_Labs/bomblab.md
