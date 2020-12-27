@@ -12,7 +12,7 @@ export function renderImagleBlocks(fontBlock, funcParams) {
         return;
     }
 
-    console.log(fontBlock)
+    //console.log(fontBlock)
 
     let imageFloat = 'none';
     let i_margin_top = '0', i_margin_bottom = '0', imageMarginLeft = '0', imageMarginRight = '0';
@@ -50,7 +50,7 @@ export function renderImagleBlocks(fontBlock, funcParams) {
     appendEndDiv(outerDiv);
 
     let img = outerDiv.getElementsByTagName('img');
-    console.log(img)
+    //console.log(img)
     if (img.length == 0) {
         console.log("where is <img> ?");
         return;

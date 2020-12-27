@@ -10,10 +10,10 @@
  *    Note: add new admonition below and add ul setting here.
  */
 
-.md-typeset .admonition.hint ul,
-.md-typeset details.hint ul,
-.md-typeset .admonition.caution ul,
-.md-typeset details.caution ul {
+.md-typeset .admonition.hint > ul,
+.md-typeset details.hint > ul,
+.md-typeset .admonition.caution > ul,
+.md-typeset details.caution > ul {
     margin-top: -0.2rem;
 }
 

@@ -87,6 +87,7 @@ nav:
         - 3. dynamic linking: _csapp/_Link/3.md
       - ECF:
         - 1. process: _csapp/_ECF/1.md
+        - 2. signal: _csapp/_ECF/2.md
       - Labs:
         - datalab: _csapp/_Labs/datalab.md
         - bomblab: _csapp/_Labs/bomblab.md
