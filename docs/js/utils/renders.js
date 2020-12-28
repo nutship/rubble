@@ -296,12 +296,15 @@ export function renderLists(fontBlock, funcParams) {
     if (set2 && !set1) {
         mLeftU1 = mLeftU1Mode;
     }
-    if (setVal) {
-        ul.style.setProperty('--ul1-margin-left', mLeftU1);
-        ul.style.setProperty('--ul2-margin-left', mLeftU2);
-    } else if (setMode) {
+    
+    if (setMode) {
         ul.style.setProperty('--ul1-margin-left', mLeftU1Mode);
         ul.style.setProperty('--ul2-margin-left', mLeftU2Mode);
+        if (set1) ul.style.setProperty('--ul1-margin-left', mLeftU1);
+        if (set2) ul.style.setProperty('--ul2-margin-left', mLeftU2);
+    } else if (setVal) {
+        ul.style.setProperty('--ul1-margin-left', mLeftU1);
+        ul.style.setProperty('--ul2-margin-left', mLeftU2);
     }
 
     replaceElementByNewTag(fontBlock, 'div')
