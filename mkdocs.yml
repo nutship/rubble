@@ -88,6 +88,7 @@ nav:
       - ECF:
         - 1. process: _csapp/_ECF/1.md
         - 2. signal: _csapp/_ECF/2.md
+        - 3. nonlocal jump: _csapp/_ECF/3.md
       - Labs:
         - datalab: _csapp/_Labs/datalab.md
         - bomblab: _csapp/_Labs/bomblab.md
