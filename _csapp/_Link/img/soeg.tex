@@ -1,0 +1,91 @@
+\documentclass[UTF8]{ctexart}
+\usepackage{tikz}
+\usepackage{pifont}
+\usetikzlibrary{shapes,arrows,fit,positioning,math}
+\usetikzlibrary{shadows}% 阴影支持
+
+\begin{document}
+	\pagestyle{empty} % 无页眉页脚
+	
+	\tikzset{
+		box/.style = {
+			rectangle, %矩形节点
+			% rounded corners =5pt,      %圆角
+			minimum width    =    50pt,  %最小宽度
+			minimum height   =    20pt,  %最小高度
+			align            =    left,  %文字对齐
+			inner sep=5pt,               %文字和边框的距离
+			draw=blue,                   %边框颜色
+		}
+			
+	}
+
+	\tikzset {
+		codeline/.style = {
+			%fill = white,
+			%fill opacity=0.0,
+			%text opacity=1,
+		}
+	}
+
+	\tikzset {
+		outerrec/.style = {
+			inner xsep=0,
+			inner ysep=0,
+			minimum width=184pt,
+			minimum height=51pt,
+			draw,
+			outer sep=0
+		}
+	}
+
+	\tikzstyle{arrow} = [thick,->,>=stealth,draw=blue]
+
+	
+
+	%Ex1
+	\begin{tikzpicture}
+		\tikzmath{ \mtop = 12; };
+		
+		\node[codeline]                                           (dcl1)  {\texttt{.got.plt[0]: \textsf{addr of} .dynamic}};
+		\node[codeline, below=\mtop pt of dcl1.west, anchor=west] (dcl2)  {\texttt{.got.plt[1]: \textsf{addr of\texttt{ }reloc entries}}};
+		\node[codeline, below=\mtop pt of dcl2.west, anchor=west] (dcl3)  {\texttt{.got.plt[2]: \textsf{addr of\texttt{ }dynamic linker}}};
+		\node[codeline, below=\mtop pt of dcl3.west, anchor=west] (dcl4)  {\texttt{.got.plt[3]: 0x401036 \# in printf\ \ }};
+		\node[codeline, below=\mtop pt of dcl4.west, anchor=west] (dcl5)  {\texttt{.got.plt[4]: 0x401046 \# in addvec\ \ }};
+		\node[outerrec, xshift=-4pt, fit = (dcl1) (dcl2) (dcl3) (dcl4) (dcl5)] (dcls) {};
+		\node[above = 16pt of dcl1.west, anchor=west] (o1) {\hspace*{-4pt}GOT};
+		\node[above = 14pt of o1.west, anchor=west] (xx) {\hspace*{-8pt}data section};
+		\node[draw, fit=(o1) (xx) (dcls), inner ysep=2, inner xsep=10] (dall) {};
+		
+		\tikzmath{ \ttop = 13; };
+		\node[codeline, below= 3cm of dcl5.west, anchor=west]     (tcl1)  {\itshape \texttt{\# .plt[0]: call dynamic linker}};
+		\node[codeline, below=\ttop pt of tcl1.west, anchor=west] (tcl2)  {\texttt{401020: pushq \ \ *.got.plt[1]}};
+		\node[codeline, below=\ttop pt of tcl2.west, anchor=west] (tcl3)  {\texttt{401026: jmpq \ \ \ *.got.plt[2]}};
+		\node[codeline, below=\ttop pt of tcl3.west, anchor=west] (tcl4)  {\itshape \texttt{\# .plt[1]: call printf}};
+		\node[codeline, below=\ttop pt of tcl4.west, anchor=west] (tcl5)  {\texttt{...}};
+		\node[codeline, below=\ttop pt of tcl5.west, anchor=west] (tcl6)  {\itshape \texttt{\# .plt[2]: call addvec}};
+		\node[codeline, below=\ttop pt of tcl6.west, anchor=west] (tcl7)  {\texttt{401040: jmpq \ \ \ *.got.plt[4]}};
+		\node[codeline, below=\ttop pt of tcl7.west, anchor=west] (tcl8)  {\texttt{401046: pushq \ \ 0x1}};
+		\node[codeline, below=\ttop pt of tcl8.west, anchor=west] (tcl9)  {\texttt{40104b: jmpq \ \ \ 401020 <.plt>}};
+		\node[outerrec, fit = (tcl1) (tcl2) (tcl3) (tcl4) (tcl5) (tcl6) (tcl7) (tcl8) (tcl9)] (tcls) {};
+		\node[above = 16pt of tcl1.west, anchor=west] (to1) {\hspace*{-7pt}PLT};
+		\node[codeline, above = 20pt of to1.west, anchor=west] (only) {\texttt{call   0x4005c0  <addvec@plt>}};
+		\node[above = 14pt of only.west, anchor=west] (txx) {\hspace*{-10pt}text section};
+		\node[draw, fit=(to1) (txx) (tcls), inner ysep=2, inner xsep=10] (tall) {};
+		
+		\draw[arrow] (only.west) |- ++(-0.7cm,0cm) |- node[pos=0.3,anchor=east] {\ding{172}} ([yshift=3pt] tcl7.west);
+		\draw[arrow] ([yshift=-3pt] tcl7.west) |- ++(-0.7cm,0cm) |- node[pos=0.2,anchor=east] {\ding{173}} (tcl8.west);
+		\draw[arrow] ([yshift=0pt] tcl9.west) |- ++(-1.4cm,0cm) -- node[pos=0.45,anchor=east] {\ding{174}}  ++(0cm, 3.19cm) -- (tcl2.west);;
+		\draw[arrow] (tcl3.east) -- node[pos=1.2] {\ding{175}} ++(1.4cm,0cm);
+		
+		\node[codeline, right=1cm of dcl5.east] (c4) {\texttt{\&addvec}};
+		\draw[arrow] (dcl5.east) -- node[pos=0.6,anchor=north] {\ding{175}} (c4.west);
+		
+		
+	\end{tikzpicture}
+
+
+
+		
+	
+\end{document}
