@@ -39,11 +39,11 @@ extra_css:
   - css/extra/admonitions.css
   - css/extra/code-blocks.css
   - css/gadgets/book.css
-  - 'https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.css'
+  - 'https://cdn.jsdelivr.net/npm/katex@0.13.0/dist/katex.min.css'
 
 extra_javascript:
-  - 'https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/katex.min.js'
-  - 'https://cdn.jsdelivr.net/npm/katex@0.11.1/dist/contrib/auto-render.min.js'
+  - 'https://cdn.jsdelivr.net/npm/katex@0.13.0/dist/katex.min.js'
+  - 'https://cdn.jsdelivr.net/npm/katex@0.13.0/dist/contrib/auto-render.min.js'
   - 'js/mkmain.js'
   - 'js/katex.js'
 
