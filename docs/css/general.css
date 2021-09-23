@@ -193,3 +193,12 @@ div.md-sidebar.md-sidebar--secondary ul.md-nav__list {
 .md-typeset table code {
     word-break: normal;
 }
+
+.generalcy dt {
+    font-size: var(--generalcy-font-size); /* 15px on win */
+    letter-spacing: var(--generalcy-letter-spacing);
+}
+
+.generalcy u.waveLine {
+    text-decoration-style: wavy;
+}

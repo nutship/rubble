@@ -2,6 +2,7 @@ import {addpTagInBlockTexts} from './utils/addtags.js'
 import {renderImagleBlocks, renderFloatCodeBlocks, renderTables, renderLists} from './utils/renders.js'
 import {addCodeBlocksCSS} from './functions/add_code_css.js'
 import {addCyTags} from './functions/font.js'
+import { replaceElementByNewTag } from './utils/block.js'
 
 
 // cover class name on md content
@@ -34,6 +35,19 @@ for (let i = 0; i < fontBlocks.length; ++i) {
     else if (funcType == 'u') {
         renderLists(fontBlocks[i], funcParams);
     }
+}
+
+/* add waveline tag */
+let htmlWaveBlocks = topBlock.getElementsByTagName('wave');
+let waveBlocks = [];
+for (let i = 0; i < htmlWaveBlocks.length; ++i) {
+    waveBlocks.push(htmlWaveBlocks[i]);
+    console.log(htmlWaveBlocks[i].childNodes)
+}
+
+for (let i = 0; i < waveBlocks.length; ++i) {
+    var newWaveTag = replaceElementByNewTag(waveBlocks[i], "u");
+    newWaveTag.className = "waveLine";
 }
 
 /* add <p> tags */
