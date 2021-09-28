@@ -63,34 +63,29 @@ objected files come in three forms:
 
 #### (2). 格式
 
-典型的 ELF 可重定位目标文件包含以下 section:
-
-<!-- prettier-ignore-start -->
+典型的 ELF 可重定位目标文件包含以下 section (代码区、数据区、辅助(链接/调试)区):
 
 <font class="t_a%0&0_b%10_h%3&0">
 
-| section                | description                                                                                                       |
-| :--------------------- | :---------------------------------------------------------------------------------------------------------------- |
-| `.text`                | 已编译程序的机器码                                                                                                |
-| `.rodata`              | 只读数据，如 `printf` 的 format 串、`switch` 的跳转表                                                             |
-| `.data`                | 已初始化的全局和静态变量                                                                                          |
-| `.bss`<rspan>3</rspan> | 未初始化或初始化为 0 的全局和静态变量 (better save space) <br>  |
-| &emsp;                 | 只是占位符，不占实际空间，段表存储其大小，符号表存储符号                                                          |
-| &emsp;                 | 运行时为其中变量分配空间，初值为 0                                                                                |
-| &emsp;                 | (note: `.bss` 不占实际空间，只需 `symtab` 中的相应项指向段表中的 `bss` 索引，实际分配空间时再清零即可)
-| `.symtab`              | 符号表，定义 & 引用的全局变量或函数的信息                                                                         |
-| `.rel.text`            | relocation table of `.text`                                                                                       |
-| `.rel.data`            | relocation table of `.data`                                                                                       |
-| `.debug`               | (`-g`) 调试符号表，条目包括局部变量和类型定义、定义和引用的全局变量、C 源文件                                     |
-| `.line`                | (`-g`) 原始 C 源程序中的行号和 `.text` 中机器指令中的映射                                                         |
-| `.strtab`              | 字符串表，表中的内容会被 `.symtab`、`.debug`、section header table 引用                                           |
-| `ABS`                  | 伪节，不该被重定位的符号                                                                                          |
-| `COMMON `              | 伪节，其存在与符号解析方式有关，有的实现将弱符号 (未初始化的全局变量) 放在这                                      |
-| `UNDEF`                | 伪节，未定义的符号 (本模块引用，其他地方定义)                                                                     |
+| section                | description                                                                   |
+| :--------------------- | :---------------------------------------------------------------------------- |
+| `.text`                | 已编译程序的机器码                                                            |
+| `.rodata`              | 只读数据，如 `printf` 的 format 串、`switch` 的跳转表                         |
+| `.data`                | 已初始化的全局和静态变量                                                      |
+| `.bss`<rspan>3</rspan> | 未初始化或初始化为 0 的全局和静态变量 (better save space) <br>                |
+| &emsp;                 | 在可执行目标文件和可重定位目标文件中，`.bss` 均不占实际空间                   |
+| &emsp;                 |                                                                               |
+| `.symtab`              | 符号表，定义 & 引用的全局变量或函数的信息                                     |
+| `.rel.text`            | relocation table of `.text`                                                   |
+| `.rel.data`            | relocation table of `.data`                                                   |
+| `.debug`               | (`-g`) 调试符号表，条目包括局部变量和类型定义、定义和引用的全局变量、C 源文件 |
+| `.line`                | (`-g`) 原始 C 源程序中的行号和 `.text` 中机器指令中的映射                     |
+| `.strtab`              | 字符串表，表中的内容会被 `.symtab`、`.debug`、section header table 引用       |
+| `ABS`                  | 伪节，不该被重定位的符号                                                      |
+| `COMMON `              | 伪节，其存在与符号解析方式有关，有的实现将弱符号 (未初始化的全局变量) 放在这  |
+| `UNDEF`                | 伪节，未定义的符号 (本模块引用，其他地方定义)                                 |
 
 </font>
-
-<!-- prettier-ignore-end -->
 
 将代码段和数据段分开存储的好处:
 
@@ -186,7 +181,7 @@ ELF 文件有 32 位版本和 64 位版本，因此其文件头也有这两种�
 
 #### (2). Section Header Table
 
-段表描述各个段的信息，例如 段名、段长度、在文件中的偏移、读写权限等，数组元素的结构：
+段表描述各个段的信息，例如 段名、段长、在文件中的偏移 (索引各个段)、读写权限等，数组元素的结构：
 
 ```C
 typedef struct {

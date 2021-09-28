@@ -82,15 +82,16 @@ nav:
         - 3. procedures: _csapp/1_Basis/3.md
         - 4. struct: _csapp/1_Basis/4.md
       - Link:
-        - 1. object file: _csapp/_Link/1.md
-        - 2. static linking: _csapp/_Link/2.md
-        - 3. dynamic linking: _csapp/_Link/3.md
+        - 1. object file: _csapp/_Link/object_file.md
+        - 2. static linking: _csapp/_Link/stlink.md
+        - 3. dynamic linking: _csapp/_Link/dynlink.md
       - ECF:
         - 1. process: _csapp/_ECF/1.md
         - 2. signal: _csapp/_ECF/2.md
         - 3. nonlocal jump: _csapp/_ECF/3.md
       - Memory:
         - 1. cache: _csapp/_Memory/1.md
+        - 2. virtual memory: _csapp/_Memory/vm.md
       - Labs:
         - datalab: _csapp/_Labs/datalab.md
         - bomblab: _csapp/_Labs/bomblab.md

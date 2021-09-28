@@ -1,11 +1,11 @@
 ### 1. 静态链接过程
 
--   符号解析: &ensp; 关联跨模块符号的引用和定义
--   重定位: &ensp; 为 section 和跨模块符号分配运行时地址，并修改对符号的引用
+-   符号解析: &ensp; 关联跨模块符号的引用和定义，为重定位作铺垫
+-   重定位:
+    -   模块编译生成 `_.o` 时，由于不知道运行时的代码段和数据段的地址，模块内每引用一个全局符号 (自己定义的也算)，就生成一个重定位条目 `.rel._` (先留坑并存点有效信息，等填)
+    -   链接时，先合并所有的节，然后把地址赋给每个合并后的节、输入模块定义的所有符号，此时重定位信息已经完整 (节地址、函数和变量的地址都知道了)，根据重定位条目执行重定位
 
 ### 2. 符号解析
-
-编译器把当前模块中的 (静态 & 非静态) 全局符号 和 外部符号的引用 收集好后交给汇编器，汇编器生成 `.symtab` 段，交给链接器进行符号解析。
 
 #### (1). 符号表
 
@@ -165,6 +165,8 @@ Linux 链接器构造全局符号表，根据如下规则处理多重定义的�
 
 ### 3. 重定位
 
+<!--
+
 编译时，把需要重定位区域的信息保存在 `.rel._` 中；链接时，符号解析完成后进行重定位:
 
 <font class="u_n">
@@ -175,6 +177,8 @@ Linux 链接器构造全局符号表，根据如下规则处理多重定义的�
     -   linker 修改代码节和数据节中对每个符号的引用，使它们指向正确的运行时地址，这一步依赖于 relocation entry
 
 </font>
+
+-->
 
 #### (1). 重定位表
 
@@ -206,6 +210,8 @@ ELF 定义了 32 种重定位类型，只关心最基本的两种:
 
 由 `Elf64_Rela` 的定义，假设每个重定位条目有 `offset, symbol, type, addend` 4 个属性
 
+<!--
+
 ```C
 /* Peseudocode of relocating algorithm
  * ADDR: run-time address
@@ -223,6 +229,8 @@ for each section s {
     }
 }
 ```
+
+-->
 
 ??? hint "example"
 
@@ -285,7 +293,74 @@ for each section s {
     - 由 `.text` 地址加偏移 (`r.offset`)，确定填空 `e8 __ 00 00 00 callq 13 <sum>` 的地址 `0x4004df`
     - `*(0x4004df) = x`，由于是 PC 相对寻址，先 `0x4004df + 4` 获得下一条指令的地址 `0x4004e3`，然后减去函数地址 `x = 0x4004e3 - 0x4004e8 = 0x5`
 
-### 4. 和静态库链接
+### 4. 可执行文件
+
+&emsp; &emsp; <img src="../img/exec.png" width=550>
+
+可执行目标文件和可重定位目标文件相似:
+
+-   多了一个段头部表，索引了运行时所需的段
+-   已经链接好，无需重定位节 `.rel._`
+
+??? hint "example"
+
+    === "test.c"
+
+        ```c
+        int array[1000];
+
+        int main() {
+            int b = array[0];
+        }
+        ```
+
+    === "view segment header table of `test`"
+
+        ```console
+        $ gcc test.c -no-pie -o test
+        $ readelf -l test
+        Elf 文件类型为 EXEC (可执行文件)
+        Entry point 0x401020
+        There are 13 program headers, starting at offset 64
+
+        程序头：
+        Type           Offset             VirtAddr           PhysAddr
+                        FileSiz            MemSiz              Flags  Align
+        PHDR           0x0000000000000040 0x0000000000400040 0x0000000000400040
+                        0x00000000000002d8 0x00000000000002d8  R      0x8
+        INTERP         0x0000000000000318 0x0000000000400318 0x0000000000400318
+                        0x000000000000001c 0x000000000000001c  R      0x1
+            [Requesting program interpreter: /lib64/ld-linux-x86-64.so.2]
+        LOAD           0x0000000000000000 0x0000000000400000 0x0000000000400000
+                        0x0000000000000550 0x0000000000000550  R      0x1000
+        LOAD           0x0000000000001000 0x0000000000401000 0x0000000000401000
+                        0x00000000000001a5 0x00000000000001a5  R E    0x1000
+        LOAD           0x0000000000002000 0x0000000000402000 0x0000000000402000
+                        0x00000000000000f8 0x00000000000000f8  R      0x1000
+        LOAD           0x0000000000002e40 0x0000000000403e40 0x0000000000403e40
+                        0x00000000000001e8 0x00000000000011c0  RW     0x1000
+        DYNAMIC        0x0000000000002e50 0x0000000000403e50 0x0000000000403e50
+                        0x0000000000000190 0x0000000000000190  RW     0x8
+        NOTE           0x0000000000000338 0x0000000000400338 0x0000000000400338
+                        0x0000000000000040 0x0000000000000040  R      0x8
+        ...
+
+        Section to Segment mapping:
+        段节...
+        00
+        01     .interp
+        02     .interp .note.gnu.property .note.gnu.build-id .note.ABI-tag .gnu.hash .dynsym .dynstr .gnu.version .gnu.version_r .rela.dyn
+        03     .init .text .fini
+        04     .rodata .eh_frame_hdr .eh_frame
+        05     .init_array .fini_array .dynamic .got .got.plt .data .bss
+        06     .dynamic
+        07     .note.gnu.property
+        ...
+        ```
+
+    注意需要关闭代码段和数据段的随机化 `-no-pie`。`FileSiz` 代表目标文件的节大小，`MemSiz` 代表加载到内存中的段大小。由最后一个 `LOAD`，可以知道可执行文件中 `.bss` 放在数据段最后且不占内存的原因。
+
+### 5. 和静态库链接
 
 所有的编译系统都支持把多个目标模块打包成一个 static library，如果没有静态库:
 
