@@ -89,9 +89,12 @@ nav:
         - 1. process: _csapp/_ECF/1.md
         - 2. signal: _csapp/_ECF/2.md
         - 3. nonlocal jump: _csapp/_ECF/3.md
+        - ?: _csapp/_ECF/ini.md
       - Memory:
         - 1. cache: _csapp/_Memory/1.md
         - 2. virtual memory: _csapp/_Memory/vm.md
+      - IO:
+        - 1. basis: _csapp/_IO/basis.md
       - Labs:
         - datalab: _csapp/_Labs/datalab.md
         - bomblab: _csapp/_Labs/bomblab.md
